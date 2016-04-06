@@ -94,11 +94,21 @@ $(document).ready(function() {
     });
   });
 
+
+//Seznam userjev - izpis tabele userjev
   socket.on('uporabniki', function(uporabniki) {
     $('#seznam-uporabnikov').empty();
     for (var i=0; i < uporabniki.length; i++) {
       $('#seznam-uporabnikov').append(divElementEnostavniTekst(uporabniki[i]));
     }
+    
+    //Izpis možnosti zasebno
+    $("#seznam-uporabnikov div").click(function() {
+        var posljiZasebno = $("#poslji-sporocilo");
+        //console.log("test");
+        posljiZasebno.val("/zasebno \"" + $(this).text() + "\" ");
+        $('#poslji-sporocilo').focus();
+    });
   });
 
   setInterval(function() {
