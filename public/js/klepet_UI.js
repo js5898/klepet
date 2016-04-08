@@ -1,7 +1,12 @@
 function divElementEnostavniTekst(sporocilo) {
   var jeSmesko = sporocilo.indexOf('http://sandbox.lavbic.net/teaching/OIS/gradivo/') > -1;
-  if (jeSmesko) {
-    sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('png\' /&gt;', 'png\' />');
+  
+  var jeVideo = sporocilo.indexOf('<iframe src="https://www.youtube.com/embed/') > -1;
+  
+  
+  if (jeSmesko || jeVideo) {
+    //POPRAVEK!!!
+    sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('png\' /&gt;', 'png\' />').replace(/&lt;(iframe src='https:\/\/www\.youtube\.com\/embed\/\\S*' allowfullscreen)&gt;&lt;(\/iframe)&gt;/g, "<$1><$2>");
     return $('<div style="font-weight: bold"></div>').html(sporocilo);
   } else {
     return $('<div style="font-weight: bold;"></div>').text(sporocilo);
@@ -16,6 +21,7 @@ function procesirajVnosUporabnika(klepetApp, socket) {
   var sporocilo = $('#poslji-sporocilo').val();
   sporocilo = dodajSmeske(sporocilo);
   var sistemskoSporocilo;
+  najdiVideo(sporocilo);
 
   if (sporocilo.charAt(0) == '/') {
     sistemskoSporocilo = klepetApp.procesirajUkaz(sporocilo);
@@ -52,6 +58,19 @@ function filtirirajVulgarneBesede(vhod) {
   return vhod;
 }
 
+function najdiVideo(vhod){
+  
+  //ce ne najde je null!
+  var video = vhod.toString().match(new RegExp('\\bhttps:\/\/www\.youtube\.com\/watch\\?v\\=\\S*', 'gi'));
+  console.log("Video: "+video);
+    
+  if(video){
+    for(var i in video){
+        $('#sporocila').append(divElementHtmlTekst('<iframe src="https://www.youtube.com/embed/'+video[i].replace(/https\:\/\/www\.youtube\.com\/watch\?v\=/gi, '')+'" allowfullscreen></iframe>'));
+    }
+  }
+}
+
 $(document).ready(function() {
   var klepetApp = new Klepet(socket);
 
@@ -76,6 +95,7 @@ $(document).ready(function() {
   socket.on('sporocilo', function (sporocilo) {
     var novElement = divElementEnostavniTekst(sporocilo.besedilo);
     $('#sporocila').append(novElement);
+    najdiVideo(sporocilo.besedilo);
   });
   
   socket.on('kanali', function(kanali) {
