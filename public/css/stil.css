@@ -53,6 +53,11 @@ a {
   background-color: #ddd;
 }
 
+.slike {
+  width: 200px;
+  padding-left: 20px;
+}
+
 #poslji-sporocilo {
   width: 700px;
   margin-bottom: 1em;
