@@ -66,6 +66,27 @@ $(document).ready(function() {
     }
     $('#sporocila').append(divElementHtmlTekst(sporocilo));
   });
+  
+
+  $('#vsebina').jrumble();
+  var stopID;
+  
+  socket.on('dregljaj', function(rezultat) {
+      var dregljajT = rezultat.dregljaj;
+      
+     
+      console.log("Dregljaj T/F: "+dregljajT);
+      
+      if(dregljajT){
+        //console.log("Vzdevek: "+rezultat.vzdevek);
+        
+        clearTimeout(stopID);
+        $('#vsebina').trigger('startRumble');
+        
+        stopID=setTimeout(function (){
+          $('#vsebina').trigger('stopRumble'); }, 1500);
+        }
+  })
 
   socket.on('pridruzitevOdgovor', function(rezultat) {
     trenutniKanal = rezultat.kanal;
